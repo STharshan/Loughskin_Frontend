@@ -34,7 +34,7 @@ export default function ServicesSection() {
   ];
 
   return (
-    <section className="py-20 px-4 bg-white">
+    <section className="py-10 px-4 bg-white">
       <div className="max-w-7xl mx-auto">
         
         {/* SECTION HEADER */}

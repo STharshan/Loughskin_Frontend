@@ -16,7 +16,7 @@ const Banner = () => {
   };
 
   return (
-    <section className="">
+    <section className="py-10">
       <div className="max-w-5xl mx-auto">
         <motion.div
           initial="hidden"
