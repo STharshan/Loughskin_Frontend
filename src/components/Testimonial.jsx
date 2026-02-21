@@ -1,15 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Star, Quote } from "lucide-react";
 
 export default function Testimonials() {
- const testimonials = [
+  const testimonials = [
     {
       author: "Catherine",
       location: "Local",
       rating: 5,
       service: "Head Spa",
-      text: "Absolutely amazing! My first time experiencing the head spa and have recommended it to all my girls and also my boyfriend. Can’t recommend enough!! Do not hesitate to book, it’s a must. Salon is luxurious 🤎",
+      text: "Absolutely amazing! My first time experiencing the head spa and have recommended it to all my girls and also my boyfriend. Can't recommend enough!! Do not hesitate to book, it's a must. Salon is luxurious 🤎",
     },
     {
       author: "Elaine Croshaw",
@@ -37,7 +37,7 @@ export default function Testimonials() {
       location: "Loughborough",
       rating: 5,
       service: "Body Contour Bundle",
-      text: "I booked in for the body contour bundle on my torso and it was brilliant! Shriya was so knowledgeable and professional. She made me feel super comfortable getting this treatment done on something I’m so insecure about.",
+      text: "I booked in for the body contour bundle on my torso and it was brilliant! Shriya was so knowledgeable and professional. She made me feel super comfortable getting this treatment done on something I'm so insecure about.",
     },
     {
       author: "Lauren Bolus-Jones",
@@ -58,7 +58,7 @@ export default function Testimonials() {
       location: "Loughborough",
       rating: 5,
       service: "Skin Treatment",
-      text: "Had the best experience with Shriya, so friendly and welcoming. She made me feel comfortable and walked me through the whole process. Definitely knows what she’s doing and to top it off the results are amazing 😝",
+      text: "Had the best experience with Shriya, so friendly and welcoming. She made me feel comfortable and walked me through the whole process. Definitely knows what she's doing and to top it off the results are amazing 😝",
     },
     {
       author: "B K",
@@ -72,7 +72,7 @@ export default function Testimonials() {
       location: "Loughborough",
       rating: 5,
       service: "Facials",
-      text: "I’ve been for many facials in my life and hands down Lough Skin do the best facials. From start to finish it was amazing. Thank you so much to Shriya my skin feels great.",
+      text: "I've been for many facials in my life and hands down Lough Skin do the best facials. From start to finish it was amazing. Thank you so much to Shriya my skin feels great.",
     },
     {
       author: "Rashpal Bassi",
@@ -128,7 +128,7 @@ export default function Testimonials() {
       location: "Visitor",
       rating: 5,
       service: "Head Spa",
-      text: "I’m visiting the area and got a last minute booking for a Japanese head spa treatment. I’m so glad I did as it was an amazing experience! B is so lovely and made me feel super comfortable. The treatment itself was incredible. Highly recommend!",
+      text: "I'm visiting the area and got a last minute booking for a Japanese head spa treatment. I'm so glad I did as it was an amazing experience! B is so lovely and made me feel super comfortable. The treatment itself was incredible. Highly recommend!",
     },
     {
       author: "Naima Khatun",
@@ -149,33 +149,51 @@ export default function Testimonials() {
       location: "Local Guide",
       rating: 5,
       service: "Luxury Head Spa + Facial",
-      text: "This was incredible and hands down the best treatment I’ve had (luxury Japanese headspa and facial). I was made to feel so relaxed, and the headspa is as good as it looks on social media. My hair and scalp feels amazing.",
+      text: "This was incredible and hands down the best treatment I've had (luxury Japanese headspa and facial). I was made to feel so relaxed, and the headspa is as good as it looks on social media. My hair and scalp feels amazing.",
     },
   ];
 
-  // --- Responsive Logic ---
-  const [viewPortWidth, setViewPortWidth] = useState(0);
+  const GAP = 24; // px — matches gap-6
+
+  const [viewPortWidth, setViewPortWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1024
+  );
   const [currentIndex, setCurrentIndex] = useState(0);
   const [expandedIndex, setExpandedIndex] = useState(null);
+  const trackRef = useRef(null);
 
   useEffect(() => {
-    // Handle window sizing safely
     const handleResize = () => setViewPortWidth(window.innerWidth);
-    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Determine how many cards to show based on screen width
+  // 1 card on mobile (<640), 2 on tablet (<1024), 3 on desktop
   const visibleCards = viewPortWidth < 640 ? 1 : viewPortWidth < 1024 ? 2 : 3;
+  const maxIndex = testimonials.length - visibleCards;
 
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev === 0 ? testimonials.length - visibleCards : prev - 1));
-  };
+  const handlePrev = () =>
+    setCurrentIndex((prev) => Math.max(prev - 1, 0));
 
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev >= testimonials.length - visibleCards ? 0 : prev + 1));
-  };
+  const handleNext = () =>
+    setCurrentIndex((prev) => Math.min(prev + 1, maxIndex));
+
+  const [trackWidth, setTrackWidth] = useState(0);
+
+  useEffect(() => {
+    if (!trackRef.current) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setTrackWidth(entry.contentRect.width);
+    });
+    ro.observe(trackRef.current);
+    return () => ro.disconnect();
+  }, []);
+
+  const cardWidth =
+    trackWidth > 0
+      ? (trackWidth - GAP * (visibleCards - 1)) / visibleCards
+      : 0;
+  const xOffset = currentIndex * (cardWidth + GAP);
 
   const truncateText = (text, index) => {
     if (expandedIndex === index) return text;
@@ -184,11 +202,10 @@ export default function Testimonials() {
 
   return (
     <section className="py-20 bg-[#faf9f7] overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6">
-        
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Header */}
         <div className="text-center mb-16">
-          <motion.span 
+          <motion.span
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             className="text-[#a67c5b] font-black uppercase tracking-[0.3em] text-[10px] md:text-xs mb-4 block"
@@ -203,25 +220,33 @@ export default function Testimonials() {
 
         {/* Slider Container */}
         <div className="relative group">
-          
-          <div className="overflow-hidden py-4">
+          {/* Track */}
+          <div className="overflow-hidden py-4" ref={trackRef}>
             <motion.div
-              className="flex gap-6"
-              animate={{ x: `calc(-${currentIndex * (100 / visibleCards)}% )` }}
+              className="flex"
+              style={{ gap: GAP }}
+              animate={{ x: -xOffset }}
               transition={{ duration: 0.8, ease: [0.32, 0.72, 0, 1] }}
             >
               {testimonials.map((t, index) => (
                 <div
                   key={index}
-                  style={{ width: `calc(${100 / visibleCards}% - ${(6 * (visibleCards - 1)) / visibleCards}px)` }}
+                  style={{
+                    width: cardWidth > 0 ? cardWidth : undefined,
+                    // Fallback before JS measures: use CSS percentage
+                    flex: cardWidth === 0 ? `0 0 calc(${100 / visibleCards}% - ${(GAP * (visibleCards - 1)) / visibleCards}px)` : "none",
+                  }}
                   className="shrink-0"
                 >
-                  <div className="h-full bg-white border border-[#e1c9b3]/20 rounded-xl p-8 shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col justify-between">
+                  <div className="h-full bg-white border border-[#e1c9b3]/20 rounded-xl p-6 sm:p-8 shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col justify-between">
                     <div>
                       <div className="flex justify-between items-start mb-6">
                         <div className="flex gap-1">
                           {[...Array(t.rating)].map((_, i) => (
-                            <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                            <Star
+                              key={i}
+                              className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                            />
                           ))}
                         </div>
                         <Quote className="w-8 h-8 text-[#e1c9b3] opacity-30" />
@@ -233,7 +258,11 @@ export default function Testimonials() {
 
                       {t.text.length > 150 && (
                         <button
-                          onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
+                          onClick={() =>
+                            setExpandedIndex(
+                              expandedIndex === index ? null : index
+                            )
+                          }
                           className="text-[#a67c5b] font-bold text-sm hover:underline mb-6 block"
                         >
                           {expandedIndex === index ? "Read Less" : "Read More"}
@@ -242,12 +271,16 @@ export default function Testimonials() {
                     </div>
 
                     <div className="flex items-center gap-4 mt-6 pt-6 border-t border-gray-100">
-                      <div className="w-12 h-12 rounded-full bg-linear-to-br from-[#a67c5b] to-[#c9a68a] text-white flex items-center justify-center font-serif text-lg font-bold">
+                      <div className="w-12 h-12 rounded-full bg-linear-to-br from-[#a67c5b] to-[#c9a68a] text-white flex items-center justify-center font-serif text-lg font-bold shrink-0">
                         {t.author.charAt(0)}
                       </div>
-                      <div>
-                        <h4 className="font-bold text-gray-900 leading-none mb-1">{t.author}</h4>
-                        <span className="text-xs text-gray-400 uppercase tracking-wider">{t.location}</span>
+                      <div className="min-w-0">
+                        <h4 className="font-bold text-gray-900 leading-none mb-1 truncate">
+                          {t.author}
+                        </h4>
+                        <span className="text-xs text-gray-400 uppercase tracking-wider">
+                          {t.location}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -256,17 +289,38 @@ export default function Testimonials() {
             </motion.div>
           </div>
 
-          {/* Navigation Controls */}
-          <div className="flex justify-center gap-4 mt-12 lg:absolute lg:top-1/2 lg:-translate-y-1/2 lg:w-full lg:justify-between lg:px-2 lg:pointer-events-none">
+          {/* Navigation — below on mobile, sides on desktop */}
+          <div className="flex justify-center gap-4 mt-8 lg:mt-0 lg:absolute lg:top-1/2 lg:-translate-y-1/2 lg:w-full lg:justify-between lg:px-2 lg:pointer-events-none">
             <button
               onClick={handlePrev}
-              className="lg:pointer-events-auto w-12 h-12 flex items-center justify-center bg-white border border-[#e1c9b3] text-[#a67c5b] rounded-full hover:bg-[#a67c5b] hover:text-white transition-all shadow-lg lg:-translate-x-6"
+              disabled={currentIndex === 0}
+              aria-label="Previous"
+              className="lg:pointer-events-auto w-12 h-12 flex items-center justify-center bg-white border border-[#e1c9b3] text-[#a67c5b] rounded-full hover:bg-[#a67c5b] hover:text-white transition-all shadow-lg lg:-translate-x-6 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
+
+            {/* Dot indicators — mobile only */}
+            <div className="flex items-center gap-2 lg:hidden">
+              {testimonials.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentIndex(Math.min(i, maxIndex))}
+                  aria-label={`Go to testimonial ${i + 1}`}
+                  className={`rounded-full transition-all duration-300 ${
+                    i >= currentIndex && i < currentIndex + visibleCards
+                      ? "w-5 h-2 bg-[#a67c5b]"
+                      : "w-2 h-2 bg-[#e1c9b3]"
+                  }`}
+                />
+              ))}
+            </div>
+
             <button
               onClick={handleNext}
-              className="lg:pointer-events-auto w-12 h-12 flex items-center justify-center bg-white border border-[#e1c9b3] text-[#a67c5b] rounded-full hover:bg-[#a67c5b] hover:text-white transition-all shadow-lg lg:translate-x-6"
+              disabled={currentIndex >= maxIndex}
+              aria-label="Next"
+              className="lg:pointer-events-auto w-12 h-12 flex items-center justify-center bg-white border border-[#e1c9b3] text-[#a67c5b] rounded-full hover:bg-[#a67c5b] hover:text-white transition-all shadow-lg lg:translate-x-6 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <ArrowRight className="w-5 h-5" />
             </button>

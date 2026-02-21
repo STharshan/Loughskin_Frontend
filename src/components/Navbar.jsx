@@ -50,7 +50,7 @@ export default function Navigation() {
                 to={item.href}
                 className={`text-sm xl:text-base font-medium py-2 px-3 xl:px-4 rounded-full transition-all duration-200 ${
                   location.pathname === item.href
-                    ? "bg-[#d4af37] text-white"
+                    ? "bg-[#d8ba58] text-white"
                     : "text-slate-800 hover:bg-white/50"
                 }`}
               >
