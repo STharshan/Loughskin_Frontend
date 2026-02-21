@@ -16,8 +16,8 @@ const Banner = () => {
   };
 
   return (
-    <section className="py-10 px-5">
-      <div className="max-w-5xl mx-auto">
+    <section className="py-10 ">
+      <div className="max-w-6xl px-7 mx-auto">
         <motion.div
           initial="hidden"
           whileInView="visible"
