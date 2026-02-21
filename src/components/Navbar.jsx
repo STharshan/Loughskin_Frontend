@@ -28,7 +28,7 @@ export default function Navigation() {
     <>
       <header 
         className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-          scrolled ? "bg-[#e1c9b3]/95 backdrop-blur-md shadow-lg py-1" : "bg-[#e1c9b3] py-3"
+          scrolled ? "bg-[#e1c9b3]/95 backdrop-blur-md shadow-lg py-2" : "bg-[#e1c9b3] py-4"
         }`}
       >
         <div className="max-w-7xl mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8">

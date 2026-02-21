@@ -26,11 +26,7 @@ export default function AboutPage() {
     ];
 
     return (
-        <section className="relative overflow-hidden bg-[#faf9f7] py-20">
-            {/* Decorative Background Elements */}
-            <div className="absolute top-0 left-0 w-full h-64 bg-linear-to-b from-[#e1c9b3]/20 to-transparent" />
-            <div className="absolute -right-24 top-1/4 w-96 h-96 bg-[#62c5d2]/5 rounded-full blur-3xl" />
-
+        <section className="bg-[#faf9f7] py-12">
             <div className="max-w-7xl mx-auto px-6 relative z-10">
 
                 {/* HERO TITLE */}
